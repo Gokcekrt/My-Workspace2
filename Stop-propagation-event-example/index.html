@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>stopPropagation KARŞILAŞTIRMA</title>
+    <style>
+        .card {
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            text-align: center;
+        }
+        .card-bad { background-color: #ffcccc; } /* Kötü örnek */
+        .card-good { background-color: #ccffcc; } /* İyi örnek */
+        
+        button {
+            padding: 10px 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-bad { background-color: #dc3545; color: white; }
+        .btn-good { background-color: #28a745; color: white; }
+        
+        #output { border: 1px solid #333; padding: 10px; min-height: 50px; background-color: #fff; }
+    </style>
+</head>
+<body>
+
+    <h1>✨ Olay Yayılımı (Bubbling) Karşılaştırması</h1>
+
+    <h3>1. ❌ Durdurulmamış Örnek (KÖTÜ DENEYİM)</h3>
+    <div id="card-bad" class="card card-bad">
+        Ürün Kartı (Ebeveyn İşlevi: **Detaya Git**)
+        <button id="btn-bad" class="btn-bad">
+            Sepete Ekle (Çocuk İşlevi: **Ekle**)
+        </button>
+    </div>
+
+    <h3>2. ✅ Durdurulmuş Örnek (İDEAL DENEYİM)</h3>
+    <div id="card-good" class="card card-good">
+        Ürün Kartı (Ebeveyn İşlevi: **Detaya Git**)
+        <button id="btn-good" class="btn-good">
+            Sepete Ekle (**`stopPropagation()` Kullanıldı**)
+        </button>
+    </div>
+
+    <h3>Sonuç Kayıtları</h3>
+    <div id="output">...</div>
+
+    <script>
+        const output = document.getElementById('output');
+        output.innerHTML = 'Butonlara veya Kartlara tıklayarak sonucu görün.';
+
+        function logAction(message, color) {
+            const p = document.createElement('p');
+            p.style.color = color;
+            p.innerHTML = message;
+            output.prepend(p); 
+        }
+
+        // ------------------------------------------------------------------
+        // ÖRNEK 1: YAYILIM DURDURULMADI (BAD)
+        // ------------------------------------------------------------------
+
+        // Ebeveyn: Ürün Kartı (Detaya Gitmek İster)
+        document.getElementById('card-bad').addEventListener('click', function(event) {
+            logAction(`[BAD KART TETİKLENDİ] Detay Sayfasına Yönlendiriliyorsunuz!`, 'darkred');
+        });
+
+        // Çocuk: Sepete Ekle Butonu (Sadece Ekleme Yapar)
+        document.getElementById('btn-bad').addEventListener('click', function(event) {
+            // !!! event.stopPropagation() YOK !!!
+            logAction(`[BAD BUTON TETİKLENDİ] Sepete Eklendi.`, 'red');
+        });
+
+        // ------------------------------------------------------------------
+        // ÖRNEK 2: YAYILIM DURDURULDU (GOOD)
+        // ------------------------------------------------------------------
+
+        // Ebeveyn: Ürün Kartı (Detaya Gitmek İster)
+        document.getElementById('card-good').addEventListener('click', function(event) {
+            logAction(`[GOOD KART TETİKLENDİ] Detay Sayfasına Yönlendiriliyorsunuz!`, 'darkgreen');
+        });
+
+        // Çocuk: Sepete Ekle Butonu (Sadece Ekleme Yapar ve Yayılımı Durdurur)
+        document.getElementById('btn-good').addEventListener('click', function(event) {
+            
+            // 🔥 KRİTİK NOKTA: Yayılımı durdur!
+            event.stopPropagation();
+            
+            logAction(`[GOOD BUTON TETİKLENDİ] Sepete Eklendi. Yayılım durduruldu.`, 'green');
+        });
+    </script>
+</body>
+</html>
